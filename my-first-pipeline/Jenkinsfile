@@ -1,6 +1,8 @@
 pipeline {
   agent {
-    docker { label 'docker-agent'
+    docker { 
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+      label 'docker-agent'
       image 'maven:3.9.6-eclipse-temurin-17' }
   }
   stages {
