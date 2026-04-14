@@ -12,7 +12,6 @@ target/
 
 # OS files
 .DS_Store
-Thumbs.db
 
 # Jenkins
 *.log
