@@ -2,7 +2,7 @@ pipeline{
     agent any
 
     environment {
-        image_name = "jai129-${JOB_NAME}:${BUILD_NUMBER}"
+        image_name = "jai129/${JOB_NAME}:${BUILD_NUMBER}"
     }
 
     stages{
