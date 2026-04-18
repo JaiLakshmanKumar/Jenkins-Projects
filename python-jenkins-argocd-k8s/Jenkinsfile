@@ -51,6 +51,7 @@ pipeline{
         stage("updating deployment file"){
             steps{
                 sh '''
+                ls -ltr 
                 cd ./django-manifests
                 cat deployment.yaml
                 sed -i '' "s|image:.*|image: $image_name|g" deployment.yaml 
