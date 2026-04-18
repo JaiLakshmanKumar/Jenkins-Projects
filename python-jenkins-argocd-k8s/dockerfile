@@ -1,0 +1,24 @@
+# Use a specific, lightweight Python version
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies first (better layer caching)
+COPY requirements.txt .
+
+## Without --no-cache-dir
+#/root/.cache/pip/     ← cache folder created
+#    django-4.2.tar.gz
+#    pillow-10.0.tar.gz
+#    ...                  wastes space inside Docker image
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
+
+# Expose Django port
+EXPOSE 8000
+
+# Run migrations then start the server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

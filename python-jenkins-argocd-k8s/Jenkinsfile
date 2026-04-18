@@ -1,0 +1,44 @@
+pipeline{
+    agent any
+
+    environment {
+        image_name = "jai129-${JOB_NAME}:${BUILD_NUMBER}"
+    }
+
+    stages{
+
+        stage("Checkout SCM"){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'python-jenkins-argocd-k8s']], userRemoteConfigs: [[credentialsId: 'jai', url: 'https://github.com/JaiLakshmanKumar/Jenkins-Projects.git']])            
+            }
+        }
+        
+        stage("Building docker image"){
+            steps{
+                sh '''
+                echo 'Buid Docker Image'
+                docker buildx build -t ${image_name} .
+                '''
+            }
+        }
+
+        stage("Pushing the artifact"){
+            steps{
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'Docker-Credentials',
+                    passwordVariable: 'DOCKER_PASS',
+                    usernameVariable: 'DOCKER_USER'
+                )]) {
+                    sh '''
+                    echo 'Logging in to docker hub'
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    echo 'Push to Repo'
+                    docker push $image_name
+                    '''
+                }
+                
+            }
+        }
+    }
+}
