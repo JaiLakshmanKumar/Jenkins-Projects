@@ -1,9 +1,6 @@
 # Maven
 target/
 *.class
-*.jar
-*.war
-*.mvn
 # IDE files
 .idea/
 *.iml
