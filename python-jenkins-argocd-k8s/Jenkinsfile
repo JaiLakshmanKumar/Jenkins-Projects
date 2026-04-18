@@ -43,13 +43,13 @@ pipeline{
         }
 
         stage("Checkout K8 manifest"){
-            step{
+            steps{
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'jai', url: 'https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git']])
             }
         }
 
         stage("updating deployment file"){
-            step{
+            steps{
                 sh '''
                 cat deployment.yaml
                 sed -i '' "s|image:.*|image: $image_name|g" deployment.yaml 
