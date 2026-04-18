@@ -17,7 +17,7 @@ pipeline {
         echo "Building the application..."
         sh 'ls -ltr'
         sh 'chmod +x ./my-first-pipeline/mvnw '
-        sh './mvnw clean package -Dmaven.repo.local=/root/.m2/repository' 
+        sh 'cd my-first-pipeline && ./mvnw clean package -Dmaven.repo.local=/root/.m2/repository' 
       }
     }
     stage('Build Docker Image'){
