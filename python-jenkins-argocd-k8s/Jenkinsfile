@@ -33,7 +33,7 @@ pipeline{
                     sh '''
                     echo 'Logging in to docker hub'
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    echo 'Push to Repo'
+                    echo 'Push to registry'
                     docker push $image_name
                     '''
                 }
