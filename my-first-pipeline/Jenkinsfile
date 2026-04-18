@@ -1,8 +1,9 @@
 pipeline {
   agent {
     docker { 
-      image 'abhishekf5/maven-abhishek-docker-agent:v1' }
+      image 'abhishekf5/maven-abhishek-docker-agent:v1' 
       args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
   }
   stages {
     stage('Build jar file') {
@@ -23,7 +24,7 @@ pipeline {
       steps{
         echo "Running docker image"
         sh 'docker run -d --name my-app simple-java-app'
-        sh curl 'http://localhost:8080' 
+        sh "curl 'http://localhost:8080'" 
       }
     } 
   }
