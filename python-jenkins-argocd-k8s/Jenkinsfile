@@ -44,24 +44,40 @@ pipeline{
 
         stage("Checkout K8 manifest"){
             steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'jai', url: 'https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git']])
+
+                dir('manifests'){
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'jai', url: 'https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git']])
+                }
             }
         }
 
         stage("updating deployment file"){
+
             steps{
-                sh '''
-                ls -ltr 
-                cd ./django-manifests
-                cat deployment.yaml
-                sed -i '' "s|image:.*|image: $image_name|g" deployment.yaml 
-                cat deployment.yaml
-                git add deployment.yaml
-                git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
-                git remote -v
-                git push https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git HEAD:main
-                '''
+                dir('manifests'){
+                    script{
+                        withCredentials([usernamePassword(
+                        credentialsId: 'jai-pat-token', 
+                        passwordVariable: 'GITHUB_PASS', 
+                        usernameVariable: 'GITHUB_USERNAME')]) 
+                        {
+                            sh '''
+                            ls -ltr 
+                            cd ./django-manifests
+                            cat deployment.yaml
+                            sed -i '' "s|image:.*|image: $image_name|g" deployment.yaml 
+                            cat deployment.yaml
+                            git add deployment.yaml
+                            git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
+                            git remote -v
+                            git push https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git HEAD:main
+                            '''
+                        }    
+                    }
+                }
+                
             }
+            
         }
 
     }
