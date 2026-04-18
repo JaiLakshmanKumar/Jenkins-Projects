@@ -27,22 +27,6 @@ pipeline {
         sh 'docker buildx build -t simple-java-app ./my-first-pipeline'
       }
     }
-    stage('Run docker file'){
-      environment {
-        // This tells Maven: "Your home is here, in the workspace I own"
-        HOME = "${env.WORKSPACE}"
-    }
-      steps{
-        echo "Running docker image"
-        sh 'docker run -p 5432:5432 -d --name my-app simple-java-app'
-        sh "curl 'http://localhost:5432'" 
-      }
-    } 
-  }
-  post{
-    always{
-      sh 'docker rm -f my-app || true'
-    }
   }
   
 }
