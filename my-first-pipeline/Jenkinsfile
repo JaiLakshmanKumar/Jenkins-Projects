@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker { 
-      image 'jai129/jai-java-maven-docker-cli-agent' 
+      image 'jai129/jai-java-maven-docker-cli-agent:v1' 
       args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
