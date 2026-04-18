@@ -16,8 +16,10 @@ pipeline{
         stage("Building docker image"){
             steps{
                 sh '''
-                echo 'Buid Docker Image'
-                docker buildx build -t ${image_name} .
+                echo 'Build Docker Image'
+                ls -ltr 
+                
+                cd ./python-jenkins-argocd-k8s && docker buildx build -t ${image_name} .
                 '''
             }
         }
