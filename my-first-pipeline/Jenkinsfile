@@ -7,6 +7,11 @@ pipeline {
   }
   stages {
     stage('Build jar file') {
+       environment {
+        // This tells Maven: "Your home is here, in the workspace I own"
+        HOME = "${env.WORKSPACE}"
+    }
+      
       steps {
         // Use 'mvn', not 'maven'
         echo "Building the application..."
@@ -18,13 +23,13 @@ pipeline {
     stage('Build Docker Image'){
       steps{
         echo "Building docker image"
-        sh 'docker buildx build -t simple-java-app .'
+        sh 'docker buildx build -t simple-java-app ./my-first-pipeline'
       }
     }
     stage('Run docker file'){
       steps{
         echo "Running docker image"
-        sh 'docker run -d --name my-app simple-java-app'
+        sh 'docker run -d -p 8080:8080 --name my-app simple-java-app'
         sh "curl 'http://localhost:8080'" 
       }
     } 
