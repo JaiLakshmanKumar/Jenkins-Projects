@@ -69,8 +69,8 @@ pipeline{
                             cat deployment.yaml
                             git add deployment.yaml
                             git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
-                            git remote -v
-                            git push https://github.com/JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git HEAD:main
+                            git remote -v                            
+                            git push https://github.com/${GITHUB_USERNAME}:${GITHUB_PASS}/jenkins-projects-cicd-manifest-repo.git HEAD:main
                             '''
                         }    
                     }
