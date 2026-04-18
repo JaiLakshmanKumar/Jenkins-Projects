@@ -5,12 +5,12 @@ pipeline {
       args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
-  stages {
-    stage('Build jar file') {
-       environment {
+  environment {
         // This tells Maven: "Your home is here, in the workspace I own"
         HOME = "${env.WORKSPACE}"
     }
+  stages {
+    stage('Build jar file') {
       
       steps {
         // Use 'mvn', not 'maven'
@@ -28,6 +28,10 @@ pipeline {
       }
     }
     stage('Run docker file'){
+      environment {
+        // This tells Maven: "Your home is here, in the workspace I own"
+        HOME = "${env.WORKSPACE}"
+    }
       steps{
         echo "Running docker image"
         sh 'docker run -d -p 8080:8080 --name my-app simple-java-app'
