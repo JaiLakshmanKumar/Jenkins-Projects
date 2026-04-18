@@ -10,7 +10,7 @@ pipeline {
       steps {
         // Use 'mvn', not 'maven'
         echo "Building the application..."
-        sh 'chmod +x mvnw'
+        sh 'chmod +x ./my-first-pipeline/mvnw '
         sh './mvnw clean package' 
       }
     }
