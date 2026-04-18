@@ -2,13 +2,35 @@ pipeline {
   agent {
     docker { 
       image 'abhishekf5/maven-abhishek-docker-agent:v1' }
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
   }
   stages {
-    stage('Test') {
+    stage('Build jar file') {
       steps {
         // Use 'mvn', not 'maven'
-        sh 'mvn --version'
+        echo "Building the application..."
+        sh 'chmod +x mvnw'
+        sh './mvnw clean package' 
       }
     }
+    stage('Build Docker Image'){
+      steps{
+        echo "Building docker image"
+        sh 'docker buildx build -t simple-java-app .'
+      }
+    }
+    stage('Run docker file'){
+      steps{
+        echo "Running docker image"
+        sh 'docker run -d --name my-app simple-java-app'
+        sh curl 'http://localhost:8080' 
+      }
+    } 
   }
+  post{
+    always{
+      sh 'docker rm -f my-app || true'
+    }
+  }
+  
 }
