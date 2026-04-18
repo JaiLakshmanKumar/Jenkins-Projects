@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker { 
-      image 'jai129/jai-java-maven-docker-cli-agent:v1' 
+      image 'jai129/jai-java-maven-docker-cli-agent:v2' 
       args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
@@ -23,6 +23,7 @@ pipeline {
     stage('Build Docker Image'){
       steps{
         echo "Building docker image"
+        sh 'docker --version'
         sh 'docker buildx build -t simple-java-app ./my-first-pipeline'
       }
     }
