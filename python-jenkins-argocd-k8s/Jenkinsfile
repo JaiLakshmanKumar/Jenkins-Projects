@@ -65,7 +65,7 @@ pipeline{
                             ls -ltr 
                             cd ./django-manifests
                             cat deployment.yaml
-                            sed -i '' "s|image:.*|image: $image_name|g" deployment.yaml 
+                            sed -i "s|image:.*|image: $image_name|g" deployment.yaml 
                             cat deployment.yaml
                             git add deployment.yaml
                             git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
