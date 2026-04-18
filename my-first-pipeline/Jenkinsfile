@@ -34,8 +34,8 @@ pipeline {
     }
       steps{
         echo "Running docker image"
-        sh 'docker run -d -p 8080:8080 --name my-app simple-java-app'
-        sh "curl 'http://localhost:8080'" 
+        sh 'docker run -d -p 9090:9090 --name my-app simple-java-app'
+        sh "curl 'http://localhost:9090'" 
       }
     } 
   }
