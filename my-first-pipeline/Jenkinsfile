@@ -34,7 +34,7 @@ pipeline {
     }
       steps{
         echo "Running docker image"
-        sh 'docker run -p 5432:5432 --name my-app simple-java-app'
+        sh 'docker run -p 5432:5432 -d --name my-app simple-java-app'
         sh "curl 'http://localhost:5432'" 
       }
     } 
