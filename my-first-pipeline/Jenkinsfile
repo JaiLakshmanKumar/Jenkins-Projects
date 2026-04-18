@@ -12,7 +12,7 @@ pipeline {
         echo "Building the application..."
         sh 'ls -ltr'
         sh 'chmod +x ./my-first-pipeline/mvnw '
-        sh './mvnw clean package' 
+        sh 'cd my-first-pipeline && ./mvnw clean package' 
       }
     }
     stage('Build Docker Image'){
