@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker { 
       image 'maven:3.9-eclipse-temurin-17-alpine' 
-      args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.m2:/root/.m2'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
   stages {
@@ -17,7 +17,7 @@ pipeline {
         echo "Building the application..."
         sh 'ls -ltr'
         sh 'chmod +x ./my-first-pipeline/mvnw '
-        sh 'cd my-first-pipeline && ./mvnw clean package -Dmaven.repo.local=/root/.m2/repository' 
+        sh 'cd my-first-pipeline && ./mvnw clean package' 
       }
     }
     stage('Build Docker Image'){
