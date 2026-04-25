@@ -33,7 +33,7 @@ pipeline{
         withSonarQubeEnv('SonarQube', envOnly: true) {
         // some block
         // This expands the evironment variables SONAR_CONFIG_NAME, SONAR_HOST_URL, SONAR_AUTH_TOKEN that can be used by any script.
-        println ${env.SONAR_HOST_URL} 
+        println "${env.SONAR_HOST_URL}" 
         sh '''
         echo "Static code analysis"
         ##cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw soanr:sonar -DSONAR_HOST_URL= -DSONAR_AUTH_TOKEN=
