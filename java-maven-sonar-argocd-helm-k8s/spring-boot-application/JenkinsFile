@@ -30,7 +30,7 @@ pipeline{
 
     stage('static code analysis'){
       steps{
-        withSonarQubeEnv('SonarQube', envOnly: true) {
+        withSonarQubeEnv(credentialsId: '4d1046cc-9b7b-4853-87be-670521b58287', installationName: 'SonarQube') {
         // some block
         // This expands the evironment variables SONAR_CONFIG_NAME, SONAR_HOST_URL, SONAR_AUTH_TOKEN that can be used by any script.
         println "${env.SONAR_HOST_URL}" 
