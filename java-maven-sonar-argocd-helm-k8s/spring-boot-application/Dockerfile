@@ -3,7 +3,7 @@
 FROM eclipse-temurin:17-jre
 
 # Simply the artifact path
-ARG artifact=target/spring-boot-web.jar
+ARG artifact=target/jai-0.0.1-SNAPSHOT.jar.original
 
 
 
