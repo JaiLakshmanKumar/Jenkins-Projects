@@ -37,10 +37,10 @@ pipeline{
         println "${env.SONAR_HOST_URL}" 
         println "${env.SONAR_CONFIG_NAME}"
         println "${env.SONAR_AUTH_TOKEN}"
-        sh '''
+        sh """
         echo "Static code analysis"
-        ##cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw soanr:sonar -DSONAR_HOST_URL= -DSONAR_AUTH_TOKEN=
-        '''
+        cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw sonar:sonar -DSONAR_HOST_URL=${env.SONAR_HOST_URL} -DSONAR_AUTH_TOKEN=${env.SONAR_AUTH_TOKEN}
+        """
         }
       }
     }
@@ -83,33 +83,33 @@ pipeline{
 //While withCredentials works in steps, Groovy variables and if-statements do not.
 //Just remember: if you write a native Bash variable (like in a loop), put a \ in front of it: \$MY_BASH_VAR
 //Use """ so you can use ${VARIABLE} everywhere.
-    stage('Update Deployement file'){
-      steps{
+    // stage('Update Deployement file'){
+    //   steps{
 
-        dir("manifests"){
-          script{
-            withCredentials([usernamePassword(
-              credentialsId: 'jai-pat-token', 
-              passwordVariable: 'GITHUB_PASS', 
-              usernameVariable: 'GITHUB_USER')]) 
-              {
-    // some block
-                sh """
-                    ls -ltr 
-                    cd ./spring-boot-app-manifests
-                    cat deployment.yaml
-                    sed -i "s|image:.*|image: ${env.image_name}|g" deployment.yaml 
-                    cat deployment.yaml
-                    git add deployment.yaml
-                    git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
-                    git remote -v                           
-                    git push https://\${GITHUB_USERNAME}:\${GITHUB_PASS}@github.com/\${GITHUB_USERNAME}/jenkins-projects-cicd-manifest-repo.git HEAD:main
-                  """
-              }
-          }
-        }
-      }
-    }
+    //     dir("manifests"){
+    //       script{
+    //         withCredentials([usernamePassword(
+    //           credentialsId: 'jai-pat-token', 
+    //           passwordVariable: 'GITHUB_PASS', 
+    //           usernameVariable: 'GITHUB_USER')]) 
+    //           {
+    // // some block
+    //             sh """
+    //                 ls -ltr 
+    //                 cd ./spring-boot-app-manifests
+    //                 cat deployment.yaml
+    //                 sed -i "s|image:.*|image: ${env.image_name}|g" deployment.yaml 
+    //                 cat deployment.yaml
+    //                 git add deployment.yaml
+    //                 git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
+    //                 git remote -v                           
+    //                 git push https://\${GITHUB_USERNAME}:\${GITHUB_PASS}@github.com/\${GITHUB_USERNAME}/jenkins-projects-cicd-manifest-repo.git HEAD:main
+    //               """
+    //           }
+    //       }
+    //     }
+    //   }
+    // }
 //in """
 //Groovy sees \${} and ignores it (removes the \).
 //Bash sees ${} and treats it as a standard variable.
