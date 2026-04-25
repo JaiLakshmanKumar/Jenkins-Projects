@@ -1,7 +1,7 @@
 pipeline{
   agent{
     docker{
-      image: 'jai129/jai-java-maven-docker-cli-agent:v2'
+      image 'jai129/jai-java-maven-docker-cli-agent:v2'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
     }
   }
@@ -18,7 +18,7 @@ pipeline{
       }
     }
 
-    stage('Build jar file and do static code analysis'){
+    stage('Build jar file'){
       steps{
         sh '''
         cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mvnw clean package
@@ -26,9 +26,11 @@ pipeline{
       }
       //sqa_40061d17aaa0575a0c074c76c1d8ca7b1ab19bf1
       
-      
+    }
+
+    stage('static code analysis'){
       steps{
-        withSonarQubeEnv('My SonarQube Server', envOnly: true) {
+        withSonarQubeEnv('SonarQube', envOnly: true) {
         // some block
         // This expands the evironment variables SONAR_CONFIG_NAME, SONAR_HOST_URL, SONAR_AUTH_TOKEN that can be used by any script.
         println ${env.SONAR_HOST_URL} 
@@ -37,9 +39,10 @@ pipeline{
         ##cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw soanr:sonar -DSONAR_HOST_URL= -DSONAR_AUTH_TOKEN=
         '''
         }
-
       }
     }
+
+    
 
 
     stage('Build Docker Image and push the docker image'){
