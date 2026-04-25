@@ -21,6 +21,7 @@ pipeline{
     stage('Build jar file'){
       steps{
         sh '''
+        ls -ltr 
         cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mvnw clean package
         '''
       }
