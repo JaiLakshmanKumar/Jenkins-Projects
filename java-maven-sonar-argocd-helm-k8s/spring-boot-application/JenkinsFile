@@ -1,0 +1,115 @@
+pipeline{
+  agent{
+    docker{
+      image: 'jai129/jai-java-maven-docker-cli-agent:v2'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+    }
+  }
+
+  environment{
+    image_name = "jai129/${JOB_NAME}:${BUILD_NUMBER}"
+  }
+
+  stages{
+
+    stage('Checout SCM source code'){
+      steps{
+        checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'java-maven-sonar-argocd-helm-k8s']], userRemoteConfigs: [[credentialsId: 'jai', url: 'git@github.com:JaiLakshmanKumar/Jenkins-Projects.git']])
+      }
+    }
+
+    stage('Build jar file and do static code analysis'){
+      steps{
+        sh '''
+        cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mvnw clean package
+        '''
+      }
+      //sqa_40061d17aaa0575a0c074c76c1d8ca7b1ab19bf1
+      
+      
+      steps{
+        withSonarQubeEnv('My SonarQube Server', envOnly: true) {
+        // some block
+        // This expands the evironment variables SONAR_CONFIG_NAME, SONAR_HOST_URL, SONAR_AUTH_TOKEN that can be used by any script.
+        println ${env.SONAR_HOST_URL} 
+        sh '''
+        echo "Static code analysis"
+        ##cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw soanr:sonar -DSONAR_HOST_URL= -DSONAR_AUTH_TOKEN=
+        '''
+        }
+
+      }
+    }
+
+
+    stage('Build Docker Image and push the docker image'){
+      steps{
+        script{
+          withCredentials([usernamePassword(
+          credentialsId: 'Docker-Credentials',
+          passwordVariable: 'DOCKER_PASS', 
+          usernameVariable: 'DOCKER_USER'
+          )]) {
+          sh '''
+
+          echo "Building Docker image"
+
+          cd java-maven-sonar-argocd-helm-k8s/spring-boot-application  && docker buildx build -t $image_name .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
+          docker push $image_name 
+          '''
+          }
+
+        //you can set the --password-stdin flag to provide a password through STDIN. Using STDIN prevents the password from ending up in the shell's history, or log-files.
+  
+        }
+      }
+    }
+
+    stage('Checkout Deployement manifest'){
+      steps{
+        dir("manifests"){
+          checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'jai', url: 'git@github.com:JaiLakshmanKumar/jenkins-projects-cicd-manifest-repo.git']])
+        }
+      }
+    }
+//While withCredentials works in steps, Groovy variables and if-statements do not.
+//Just remember: if you write a native Bash variable (like in a loop), put a \ in front of it: \$MY_BASH_VAR
+//Use """ so you can use ${VARIABLE} everywhere.
+    stage('Update Deployement file'){
+      steps{
+
+        dir("manifests"){
+          script{
+            withCredentials([usernamePassword(
+              credentialsId: 'jai-pat-token', 
+              passwordVariable: 'GITHUB_PASS', 
+              usernameVariable: 'GITHUB_USER')]) 
+              {
+    // some block
+                sh """
+                    ls -ltr 
+                    cd ./spring-boot-app-manifests
+                    cat deployment.yaml
+                    sed -i "s|image:.*|image: ${env.image_name}|g" deployment.yaml 
+                    cat deployment.yaml
+                    git add deployment.yaml
+                    git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
+                    git remote -v                           
+                    git push https://\${GITHUB_USERNAME}:\${GITHUB_PASS}@github.com/\${GITHUB_USERNAME}/jenkins-projects-cicd-manifest-repo.git HEAD:main
+                  """
+              }
+          }
+        }
+      }
+    }
+//in """
+//Groovy sees \${} and ignores it (removes the \).
+//Bash sees ${} and treats it as a standard variable.
+
+// The Jenkins Filter (Groovy) """ executed  before sending to terminal
+//The Computer Filter (Bash) '''  executed after sending to terminal
+
+  }
+}
