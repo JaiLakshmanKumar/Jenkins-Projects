@@ -26,6 +26,7 @@ pipeline {
         sh 'docker --version'
         sh 'docker buildx build -t simple-java-app ./my-first-pipeline'
       }
+      
     }
   }
   

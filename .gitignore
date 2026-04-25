@@ -6,7 +6,7 @@ target/
 *.iml
 .vscode/
 .eclipse/
-
+*@tmp
 # OS files
 .DS_Store
 

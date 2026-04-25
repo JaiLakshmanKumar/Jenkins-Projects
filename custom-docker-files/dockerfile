@@ -1,0 +1,14 @@
+# Custom image: Maven 3.9 + Eclipse Temurin 17 (Alpine) + Docker CLI
+FROM maven:3.9-eclipse-temurin-17-alpine
+
+RUN apk add --no-cache \
+    ca-certificates \
+    curl \
+    bash \
+    docker-cli \
+    docker-cli-buildx    # ✅ adds buildx plugin
+
+# Verify installations
+RUN mvn --version && java -version && docker --version && docker buildx version
+
+WORKDIR /workspace
