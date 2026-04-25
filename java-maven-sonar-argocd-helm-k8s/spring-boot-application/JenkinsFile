@@ -34,12 +34,12 @@ pipeline{
         withSonarQubeEnv(credentialsId: '4d1046cc-9b7b-4853-87be-670521b58287', installationName: 'SonarQube') {
         // some block
         // This expands the evironment variables SONAR_CONFIG_NAME, SONAR_HOST_URL, SONAR_AUTH_TOKEN that can be used by any script.
-        println "${env.SONAR_HOST_URL}" 
-        println "${env.SONAR_CONFIG_NAME}"
-        println "${env.SONAR_AUTH_TOKEN}"
+        //println "${env.SONAR_HOST_URL}" 
+        //println "${env.SONAR_CONFIG_NAME}"
+        //println "${env.SONAR_AUTH_TOKEN}"
         sh """
         echo "Static code analysis"
-        cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mnvw sonar:sonar -DSONAR_HOST_URL=${env.SONAR_HOST_URL} -DSONAR_AUTH_TOKEN=${env.SONAR_AUTH_TOKEN}
+        cd java-maven-sonar-argocd-helm-k8s/spring-boot-application && ./mvnw sonar:sonar -DSONAR_HOST_URL=${env.SONAR_HOST_URL} -DSONAR_AUTH_TOKEN=${env.SONAR_AUTH_TOKEN}
         """
         }
       }
@@ -48,30 +48,30 @@ pipeline{
     
 
 
-    stage('Build Docker Image and push the docker image'){
-      steps{
-        script{
-          withCredentials([usernamePassword(
-          credentialsId: 'Docker-Credentials',
-          passwordVariable: 'DOCKER_PASS', 
-          usernameVariable: 'DOCKER_USER'
-          )]) {
-          sh '''
+    // stage('Build Docker Image and push the docker image'){
+    //   steps{
+    //     script{
+    //       withCredentials([usernamePassword(
+    //       credentialsId: 'Docker-Credentials',
+    //       passwordVariable: 'DOCKER_PASS', 
+    //       usernameVariable: 'DOCKER_USER'
+    //       )]) {
+    //       sh '''
 
-          echo "Building Docker image"
+    //       echo "Building Docker image"
 
-          cd java-maven-sonar-argocd-helm-k8s/spring-boot-application  && docker buildx build -t $image_name .
-          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    //       cd java-maven-sonar-argocd-helm-k8s/spring-boot-application  && docker buildx build -t $image_name .
+    //       echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
-          docker push $image_name 
-          '''
-          }
+    //       docker push $image_name 
+    //       '''
+    //       }
 
-        //you can set the --password-stdin flag to provide a password through STDIN. Using STDIN prevents the password from ending up in the shell's history, or log-files.
+    //     //you can set the --password-stdin flag to provide a password through STDIN. Using STDIN prevents the password from ending up in the shell's history, or log-files.
   
-        }
-      }
-    }
+    //     }
+    //   }
+    // }
 
     stage('Checkout Deployement manifest'){
       steps{
